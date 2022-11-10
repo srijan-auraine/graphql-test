@@ -1,23 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { gql, useQuery } from "@apollo/client";
+import LaunchCard from "./LaunchCard";
+
+const FILMS_QUERY = gql`
+  {
+    launchesPast(limit: 10) {
+      id
+      mission_name
+      launch_date_local
+      links {
+        video_link
+      }
+      rocket {
+        rocket_name
+      }
+    }
+  }
+`;
 
 function App() {
+  const { data, loading, error } = useQuery(FILMS_QUERY);
+
+  if (loading) return "Loading...";
+  if (error) return <pre>{error.message}</pre>;
+
+  console.log(data);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>SpaceX Launches</h1>
+      {data.launchesPast.map((launch) => (
+        <LaunchCard
+          key={launch.id}
+          name={launch.mission_name}
+          date={launch.launch_date_local}
+          links={launch.links.video_link}
+          rocket_name={launch.rocket.rocket_name}
+        />
+      ))}
     </div>
   );
 }
