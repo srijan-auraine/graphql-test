@@ -4,17 +4,20 @@ import { gql, useQuery } from "@apollo/client";
 import LaunchCard from "./LaunchCard";
 
 const FILMS_QUERY = gql`
-  {
-    launchesPast(limit: 10) {
-      id
-      mission_name
-      launch_date_local
-      links {
-        video_link
-      }
-      rocket {
-        rocket_name
-      }
+  query getProductsByAttributeType {
+    getProductsByAttributeType(attribute_type: "best_seller", category_id: 3) {
+      product_id
+      product_name
+      category_id
+      sku
+      created_at
+      updated_at
+      category_name
+      product_price
+      short_description
+      image
+      thumbnail
+      small_image
     }
   }
 `;
@@ -25,20 +28,25 @@ function App() {
   if (loading) return "Loading...";
   if (error) return <pre>{error.message}</pre>;
 
-  console.log(data);
+  console.log(error);
+  console.log(data.getProductsByAttributeType);
 
   return (
     <div>
       <h1>SpaceX Launches</h1>
-      {data.launchesPast.map((launch) => (
-        <LaunchCard
-          key={launch.id}
-          name={launch.mission_name}
-          date={launch.launch_date_local}
-          links={launch.links.video_link}
-          rocket_name={launch.rocket.rocket_name}
-        />
-      ))}
+      <p>test</p>
+      <div>
+        {data.getProductsByAttributeType.map((prod) => (
+          <LaunchCard
+            key={prod.product_id}
+            name={prod.product_name}
+            date={prod.created_at}
+            links={prod.image}
+            rocket_name={prod.category_name}
+            description={prod.short_description}
+          />
+        ))}
+      </div>
     </div>
   );
 }
